@@ -16,16 +16,19 @@ import com.rockgustavo.msclients.rest.dto.ClienteDTO;
 import com.rockgustavo.msclients.service.ClienteService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/cliente")
 @RequiredArgsConstructor
+@Slf4j
 public class ClienteController {
 
     private final ClienteService clienteService;
 
     @GetMapping
     public String status() {
+        log.info("Obtendo o status do microservice de clientes");
         return "Hello World";
     }
 
