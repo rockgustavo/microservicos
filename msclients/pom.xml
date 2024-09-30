@@ -60,6 +60,12 @@
 			<artifactId>modelmapper</artifactId>
 			<version>3.1.1</version>
 		</dependency>
+		<!-- Apache Log4j Core-->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.24.0</version>
+		</dependency>
 		<!-- Testes -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
