@@ -29,7 +29,7 @@ public class ClienteController {
     @GetMapping
     public String status() {
         log.info("Obtendo o status do microservice de clientes");
-        return "Hello World";
+        return "MicroServiços de clientes";
     }
 
     @PostMapping
