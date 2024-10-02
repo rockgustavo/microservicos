@@ -1,12 +1,17 @@
 package com.rockgustavo.msavaliadorcredito.rest.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rockgustavo.msavaliadorcredito.model.entity.SituacaoCliente;
+import com.rockgustavo.msavaliadorcredito.exception.DadosClienteNotFoundException;
+import com.rockgustavo.msavaliadorcredito.exception.ErroComunicacaoMicroservicesException;
+import com.rockgustavo.msavaliadorcredito.model.entity.DadosAvaliacao;
 import com.rockgustavo.msavaliadorcredito.service.AvaliadorCreditoService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,12 +31,33 @@ public class AvaliadorCreditoController {
         return "MicroServiços de avaliação de crédito";
     }
 
+    @GetMapping(value = "status-msclients")
+    public String statusMsClient() {
+        log.info("Comunicacao entre microservicos - MsClient");
+        return avaliadorCreditoService.obterStatusMsClients();
+    }
+
     @GetMapping(value = "situacao-cliente", params = "cpf")
-    public ResponseEntity<SituacaoCliente> consultaSituacaoCliente(@RequestParam("cpf") String cpf) {
-        var situacaoCliente = avaliadorCreditoService.obterSituacaoCliente(cpf);
-        if (situacaoCliente.isEmpty()) {
+    public ResponseEntity<?> consultaSituacaoCliente(@RequestParam("cpf") String cpf) {
+        try {
+            var situacaoCliente = avaliadorCreditoService.obterSituacaoCliente(cpf);
+            return ResponseEntity.ok(situacaoCliente.get());
+        } catch (DadosClienteNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (ErroComunicacaoMicroservicesException e) {
+            return ResponseEntity.status(HttpStatus.resolve(e.getStatus())).body(e.getMessage());
         }
-        return ResponseEntity.ok(avaliadorCreditoService.obterSituacaoCliente(cpf).get());
+    }
+
+    @PostMapping
+    public ResponseEntity<?> realizarAvaliacao(@RequestBody DadosAvaliacao dados) {
+        try {
+            var retornoAvaliacaoCliente = avaliadorCreditoService.realizarAvaliacao(dados.getCpf(), dados.getRenda());
+            return ResponseEntity.ok(retornoAvaliacaoCliente.get());
+        } catch (DadosClienteNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (ErroComunicacaoMicroservicesException e) {
+            return ResponseEntity.status(HttpStatus.resolve(e.getStatus())).body(e.getMessage());
+        }
     }
 }

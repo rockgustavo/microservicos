@@ -33,7 +33,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteDTO> createDirectory(@RequestBody ClienteDTO clienteDTO) {
+    public ResponseEntity<ClienteDTO> createCliente(@RequestBody ClienteDTO clienteDTO) {
         var clienteSaved = clienteService.save(clienteDTO.toModel());
         URI headerLocation = ServletUriComponentsBuilder
                 .fromCurrentRequest()

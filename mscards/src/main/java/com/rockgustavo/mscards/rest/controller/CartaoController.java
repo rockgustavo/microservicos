@@ -59,18 +59,12 @@ public class CartaoController {
     @GetMapping(params = "renda")
     public ResponseEntity<List<CartaoDTO>> getCartoesRendaAte(@RequestParam("renda") Long renda) {
         List<CartaoDTO> cartoes = cartaoService.getCartoesRendaMenorIgual(renda);
-        if (cartoes.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(cartoes);
     }
 
     @GetMapping(params = "cpf")
     public ResponseEntity<List<ClienteCartaoDTO>> getCartoesByCliente(@RequestParam("cpf") String cpf) {
         List<ClienteCartaoDTO> cartoes = clienteCartaoService.listCartoesByCpf(cpf);
-        if (cartoes.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(cartoes);
     }
 }
