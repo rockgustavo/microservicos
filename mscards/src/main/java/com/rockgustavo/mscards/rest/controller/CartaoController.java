@@ -65,6 +65,7 @@ public class CartaoController {
     @GetMapping(params = "cpf")
     public ResponseEntity<List<ClienteCartaoDTO>> getCartoesByCliente(@RequestParam("cpf") String cpf) {
         List<ClienteCartaoDTO> cartoes = clienteCartaoService.listCartoesByCpf(cpf);
+        log.info("Cartões: " + cartoes);
         return ResponseEntity.ok(cartoes);
     }
 }

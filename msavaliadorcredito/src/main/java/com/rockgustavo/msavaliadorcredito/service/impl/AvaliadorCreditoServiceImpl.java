@@ -3,6 +3,7 @@ package com.rockgustavo.msavaliadorcredito.service.impl;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -11,14 +12,18 @@ import org.springframework.stereotype.Service;
 
 import com.rockgustavo.msavaliadorcredito.exception.DadosClienteNotFoundException;
 import com.rockgustavo.msavaliadorcredito.exception.ErroComunicacaoMicroservicesException;
+import com.rockgustavo.msavaliadorcredito.exception.ErroSolicitacaoCartaoException;
 import com.rockgustavo.msavaliadorcredito.model.entity.Cartao;
 import com.rockgustavo.msavaliadorcredito.model.entity.CartaoAprovado;
 import com.rockgustavo.msavaliadorcredito.model.entity.CartaoCliente;
 import com.rockgustavo.msavaliadorcredito.model.entity.DadosCliente;
+import com.rockgustavo.msavaliadorcredito.model.entity.DadosSolicitacaoEmissaoCartao;
+import com.rockgustavo.msavaliadorcredito.model.entity.ProtocoloSolicitacaoCartao;
 import com.rockgustavo.msavaliadorcredito.model.entity.RetornoAvaliacaoCliente;
 import com.rockgustavo.msavaliadorcredito.model.entity.SituacaoCliente;
 import com.rockgustavo.msavaliadorcredito.rest.api.ApiCards;
 import com.rockgustavo.msavaliadorcredito.rest.api.ApiClient;
+import com.rockgustavo.msavaliadorcredito.rest.mqueue.SolicitacaoEmissaoCartaoPublisher;
 import com.rockgustavo.msavaliadorcredito.service.AvaliadorCreditoService;
 
 import feign.FeignException;
@@ -30,6 +35,7 @@ public class AvaliadorCreditoServiceImpl implements AvaliadorCreditoService {
 
     private final ApiClient repositoryFeignClient;
     private final ApiCards repositoryFeignCards;
+    private final SolicitacaoEmissaoCartaoPublisher emissaoCartaoPublisher;
 
     public String obterStatusMsClients() {
         return repositoryFeignClient.status();
@@ -103,6 +109,16 @@ public class AvaliadorCreditoServiceImpl implements AvaliadorCreditoService {
     private BigDecimal calculaLimiteAprovado(BigDecimal idadeCliente, BigDecimal limiteBasico) {
         var fator = idadeCliente.divide(BigDecimal.valueOf(10));
         return fator.multiply(limiteBasico);
+    }
+
+    public ProtocoloSolicitacaoCartao solicitarEmissaoCartao(DadosSolicitacaoEmissaoCartao dados) {
+        try {
+            emissaoCartaoPublisher.solicitarCartao(dados);
+            var protocolo = UUID.randomUUID().toString();
+            return new ProtocoloSolicitacaoCartao(protocolo);
+        } catch (Exception e) {
+            throw new ErroSolicitacaoCartaoException(e.getMessage());
+        }
     }
 
 }
