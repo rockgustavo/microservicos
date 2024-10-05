@@ -7,6 +7,19 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: msmicroservices
+            scope: openid
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8081/realms/msmicroservices
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/msmicroservices
 
 server:
   port: 8080
@@ -16,4 +29,4 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://ms-microservicos-eureka:adm123@localhost:8761/eureka

@@ -33,7 +33,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://ms-microservicos-eureka:adm123@localhost:8761/eureka
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${random.uuid} # Usando o mesmo UUID para Eureka
